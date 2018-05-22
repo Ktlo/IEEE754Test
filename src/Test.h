@@ -6,29 +6,39 @@
 #include <string>
 #include <iostream>
 #include <cmath>
+#include <cinttypes>
 
 using namespace std;
 
+union Float;
+
+void printLastBits(ostream & output, int number, int count);
+ostream & operator<<(ostream & output, Float value);
+
+// Float union that describes IEEE 754
 union Float {
     float fval;
     struct {
-        unsigned int mantisa : 23;
-        unsigned int order : 8;
-        unsigned int sign : 1;
-    } g;
-    int ival;
+        uint32_t significand : 23;
+        uint32_t exponent : 8;
+        uint32_t sign : 1;
+    };
+    uint32_t ival;
 
     Float(float value) {
         fval = value;
-        
+    }
+
+    Float(uint32_t value) {
+        ival = value;
     }
 
     Float() {}
+
+    void mask();
+
+    friend ostream & operator<<(ostream & output, Float value);
 };
-
-void printLastBits(ostream & output, int number, int count);
-
-typedef Float FloatDump;
 
 class Test {
 public:
